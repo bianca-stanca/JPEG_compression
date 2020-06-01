@@ -7,9 +7,7 @@ import cv2
 class Application():
 
     root_window = None
-    file_selection_view = None
-    parameters_input_view = None
-    result_view = None
+    main_view = None
     image = None
 
 ####SETUP METHODS FOR FIRST VIEW OF APP####
@@ -20,7 +18,7 @@ class Application():
 
 
     def setup(self):
-        self.file_selection_view = pages.FileSelection(self.root_window, self.open_file)
+        self.main_view = pages.FileSelection(self.root_window, self.open_file)
 
     def layout(self):
         self.root_window.title("JPEG compression")
@@ -30,7 +28,7 @@ class Application():
             self.root_window.rowconfigure(i, weight = 1, minsize = 100)
             self.root_window.columnconfigure(i, weight = 1, minsize = 100)
 
-        self.file_selection_view.place(column = 1, row = 1, sticky ="ew")
+        self.main_view.place(column = 1, row = 1, sticky ="ew")
 
 
 ####BUTTON COMMAND FUNCTIONS AND NAVIGATION####
@@ -40,7 +38,13 @@ class Application():
         if not file_path:
             return
         self.image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
-        self.navigate_to_input_view(self.image)
+        self.navigate_to_input_view()
 
-    def navigate_to_input_view():
-        self.file_selection_view.destroy();
+    def navigate_to_input_view(self):
+        self.main_view.destroy();
+        self.main_view = pages.ParameterInput(self.root_window,
+                        self.submit, self.image.shape)
+        self.layout()
+
+    def submit(self):
+        pass
