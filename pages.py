@@ -5,6 +5,7 @@ from PIL import Image
 
 
 class View(ABC):
+    """General class for application pages"""
     container = None
     frm_self = None
 
@@ -19,8 +20,14 @@ class View(ABC):
     def layout(self):
         pass
 
-class FileSelection(View):
+    def place(self, **kwargs):
+        self.frm_self.grid(kwargs)
 
+    def destroy(self):
+        self.frm_self.destroy()
+
+class FileSelection(View):
+    """Class for the image input view"""
     btn_open_file = None
     lbl_instruction = None
     open_file = None
@@ -46,11 +53,7 @@ class FileSelection(View):
         self.lbl_instruction.grid(row = 0, column = 0, sticky = "ew")
         self.btn_open_file.grid(row = 1, column = 0, sticky = "ew")
 
-    def place(self, **kwargs):
-        self.frm_self.grid(kwargs)
 
-    def destroy(self):
-        self.frm_self.destroy()
 
 
 
@@ -132,8 +135,6 @@ class ParameterInput(View):
 
         self.lbl_error["fg"] = "red"
 
-    def place(self, **kwargs):
-        self.frm_self.grid(kwargs)
 
     def get_parameters(self):
         block_dimension_string = self.ent_block_dimension.get()
@@ -144,7 +145,9 @@ class ParameterInput(View):
         return parameters
 
 
+
     def on_block_dimension_entry_change(self, event):
+        """Input validation"""
         block_dimension_string = self.ent_block_dimension.get()
 
         try:
@@ -173,12 +176,12 @@ class ParameterInput(View):
             self.lbl_frequence_cutoff["text"] = "Choose a frequency cutoff point"
 
     def on_frequence_cutoff_entry_change(self, event):
+        """Input validation"""
         self.check_frequence_cutoff_validity()
 
-    def destroy(self):
-        self.frm_self.destroy()
 
     def check_frequence_cutoff_validity(self):
+        """Input validation"""
         frequence_cutoff_string = self.ent_frequence_cutoff.get()
         try:
             if len(frequence_cutoff_string) == 0:
@@ -200,6 +203,7 @@ class ParameterInput(View):
             self.btn_submit.config(state = tk.DISABLED)
 
 class Comparison(View):
+    """Class for viewing side by side comparison of original and compressed"""
     resized_original = None
     resized_compressed = None
 
@@ -250,25 +254,3 @@ class Comparison(View):
         self.lbl_compressed["image"] = self.resized_compressed
         self.lbl_compressed.grid(row = 0, column = 1, sticky = "ew")
         self.lbl_compressed.config(width = (width*scale), height = (height*scale))
-        # self.lbl_compressed.bind("<Configure>", self.resize)
-
-
-
-
-    # def resize(self, event):
-    #     # import ipdb; ipdb.set_trace()
-    #     width, height = self.original.size
-    #
-    #
-    #     #figure out initial scale of images
-    #     scale = max(event.height, event.width)/max((height, width))
-    #     self.lbl_original.config(width = (width*scale), height = (height*scale))
-    #     original_resized = self.original.resize((int(width*scale), int(height*scale)))
-    #     self.resized_original= PhotoImage(original_resized)
-    #     self.lbl_original["image"] = self.resized_original
-    #
-
-
-        ###NEEDS TO BE MOVED TO PARENT CLASS
-    def place(self, **kwargs):
-        self.frm_self.grid(kwargs)

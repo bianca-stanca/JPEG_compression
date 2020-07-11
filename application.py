@@ -1,7 +1,9 @@
 import tkinter as tk
 import pages
 from tkinter.filedialog import askopenfilename
-import matplotlib as plt
+from matplotlib.pyplot import imshow
+from matplotlib import pyplot as plt
+
 import cv2
 from scipy import fftpack as fft
 import numpy as np
@@ -12,6 +14,7 @@ class Application():
     root_window = None
     main_view = None
     image = None
+    
 
 ####SETUP METHODS FOR FIRST VIEW OF APP####
     def __init__(self):
@@ -68,7 +71,6 @@ class Application():
         #keep only the frequences where the indices sum to less than cutoff
         eliminated_frequencies = x + y >= cutoff
 
-
         for i in np.arange(start = 0, stop = row_blocks):
             row_start = i*block_size
             row_end = row_start + block_size
@@ -77,18 +79,15 @@ class Application():
                 column_end = column_start + block_size
                 #extract block
                 f = self.image[row_start:row_end, column_start:column_end]
-                c = fft.dctn(f, norm='ortho')
+                c = fft.dctn(f, 2, norm='ortho')
 
-                # print("start i: "+str(i)+" end i: "+str(i+block_size))
                 c[eliminated_frequencies] = 0
-                #inverse cosine transform
-                ff = fft.idctn(c, norm = 'ortho')
-
+                ff = fft.idctn(c, 2, norm = 'ortho')
                 rounded_ff = np.rint(ff).astype(np.int)
 
                 #replace invalid values with valid ones
-                rounded_ff[rounded_ff < 0] = 0
-                rounded_ff[rounded_ff > 255] = 255
+                rounded_ff.clip(min=0, max=255)
+
                 compressed_image[row_start:row_end, column_start:column_end] = rounded_ff
 
 
@@ -100,3 +99,10 @@ class Application():
         self.main_view = pages.Comparison(self.root_window,
                         self.image, compressed)
         self.layout()
+        cv2.imwrite("compressed.bmp", compressed)
+    def run(self):
+        self.root_window.mainloop()
+
+if __name__ == "__main__":
+    app = Application()
+    app.run()
